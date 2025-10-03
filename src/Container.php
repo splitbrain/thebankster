@@ -29,10 +29,46 @@ class Container extends \Slim\Container
     public static function getInstance()
     {
         if (self::$instance === null) {
-            $configuration = \Spyc::YAMLLoad(__DIR__ . '/../config.yaml');
-            self::$instance = new Container($configuration);
+            self::$instance = new Container(self::loadConfig());
         }
         return self::$instance;
+    }
+
+    /**
+     * Load the configuration from config.yaml and environment variables
+     *
+     * Environment variables override config.yaml values.
+     * @todo might be better to use vlucas/phpdotenv for this
+     * @return array
+     */
+    public static function loadConfig()
+    {
+        $configuration = \Spyc::YAMLLoad(__DIR__ . '/../config.yaml');
+
+        // load overrides from envrionment using getenv()
+        // keys are UPPERCASE and use THEBANKSTER_ as prefix
+        foreach ($configuration as $toplevel => $item) {
+            if (is_array($item)) {
+                foreach ($item as $key => $value) {
+                    $envkey = 'THEBANKSTER_' . strtoupper($toplevel) . '_' . strtoupper($key);
+                    $envval = getenv($envkey);
+                    if ($envval !== false) {
+                        // cast to the type of the original value
+                        settype($envval, gettype($value));
+                        $configuration[$toplevel][$key] = $envval;
+                    }
+                }
+            } else {
+                $envkey = 'THEBANKSTER_' . strtoupper($toplevel);
+                $envval = getenv($envkey);
+                if ($envval !== false) {
+                    // cast to the type of the original value
+                    settype($envval, gettype($item));
+                    $configuration[$toplevel] = $envval;
+                }
+            }
+        }
+        return $configuration;
     }
 
     /**
