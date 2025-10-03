@@ -116,6 +116,9 @@ class Container extends \Slim\Container
                 )
             );
 
+            // add basepath
+            $view->getEnvironment()->addGlobal('base_path', rtrim($this->request->getUri()->getBasePath(), '/'));
+
             $view->addExtension(new \Slim\Views\TwigExtension(
                 $this->router,
                 $this->request->getUri()

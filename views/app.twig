@@ -34,14 +34,14 @@
     </div>
 </main>
 
-<script>BASE_URL = '{{ base_url() }}';</script>
+<script>BASE_URL = '{{ base_path }}/';</script>
 {% if categories %}
     {% include 'partial/assignmodal.twig' %}
 {% endif %}
 
 {% block script %}
 {% endblock script %}
-<script src="{{ base_url() }}/script.js"></script>
+<script src="{{ base_path }}/script.js"></script>
 
 
 </body>
