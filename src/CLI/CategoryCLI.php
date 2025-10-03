@@ -6,12 +6,13 @@ use splitbrain\phpcli\Colors;
 use splitbrain\phpcli\Exception;
 use splitbrain\phpcli\Options;
 use splitbrain\phpcli\PSR3CLI;
+use splitbrain\phpcli\PSR3CLIv3;
 use splitbrain\phpcli\TableFormatter;
 use splitbrain\TheBankster\Container;
 use splitbrain\TheBankster\Entity\Category;
 
 
-class CategoryCLI extends PSR3CLI
+class CategoryCLI extends PSR3CLIv3
 {
 
     /**

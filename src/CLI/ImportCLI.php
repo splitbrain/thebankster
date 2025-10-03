@@ -5,13 +5,16 @@ namespace splitbrain\TheBankster\CLI;
 use ORM\EntityManager;
 use ORM\QueryBuilder\QueryBuilder;
 use splitbrain\phpcli\PSR3CLI;
+use splitbrain\phpcli\PSR3CLIv3;
 use splitbrain\TheBankster\Backend\AbstractBackend;
 use splitbrain\TheBankster\Container;
 use splitbrain\TheBankster\Entity\Account;
 use splitbrain\TheBankster\Entity\Rule;
 use splitbrain\TheBankster\Entity\Transaction;
+use splitbrain\TheBankster\Exception\FinTsAuthenticationExpiredException;
+use splitbrain\TheBankster\Exception\FinTsTanRequiredException;
 
-class ImportCLI extends PSR3CLI
+class ImportCLI extends PSR3CLIv3
 {
 
     /**
@@ -73,6 +76,23 @@ class ImportCLI extends PSR3CLI
 
             try {
                 $backend->importTransactions($last);
+            } catch (FinTsAuthenticationExpiredException $e) {
+                // FinTS authentication expired - log warning and skip account
+                $this->warning("Account {acct}: {message}", [
+                    'acct' => $account->account,
+                    'message' => $e->getMessage()
+                ]);
+                $this->warning("Please re-authenticate via web interface: /accounts/fints-setup/{acct}", [
+                    'acct' => $account->account
+                ]);
+                continue;
+            } catch (FinTsTanRequiredException $e) {
+                // TAN required - log warning and skip account
+                $this->warning("Account {acct}: {message}", [
+                    'acct' => $account->account,
+                    'message' => $e->getMessage()
+                ]);
+                continue;
             } catch (\Exception $e) {
                 $this->error("Account {acct} threw an Exception:", ['acct' => $account->account]);
                 $this->debug($account->account . ': ' . $e->getTraceAsString());

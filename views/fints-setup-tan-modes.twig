@@ -1,0 +1,40 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+    <h1 class="title">FinTS Setup: Select TAN Mode</h1>
+    <h2 class="subtitle">Account: {{ account.account }}</h2>
+
+    {% if error %}
+        <div class="notification is-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <div class="box">
+        <p>Please select which TAN mode you want to use for this FinTS account. Your bank supports the following methods:</p>
+
+        {% if tanModes|length > 0 %}
+            <form action="{{ path_for('fints-setup', {'account': account.account}) }}" method="post">
+                <input type="hidden" name="step" value="select_tan_mode">
+
+                <div class="field">
+                    {% for mode in tanModes %}
+                        <label class="radio">
+                            <input type="radio" name="tan_mode" value="{{ mode.getId() }}" {% if loop.first %}checked{% endif %}>
+                            <strong>{{ mode.getName() }}</strong>
+                            {% if mode.getId() %} (ID: {{ mode.getId() }}){% endif %}
+                        </label><br>
+                    {% endfor %}
+                </div>
+
+                <div class="field">
+                    <button class="button is-primary" type="submit">Continue</button>
+                    <a href="{{ path_for('accounts') }}" class="button">Cancel</a>
+                </div>
+            </form>
+        {% else %}
+            <p class="has-text-danger">No TAN modes available. Please check your account configuration.</p>
+            <a href="{{ path_for('accounts') }}" class="button">Back to Accounts</a>
+        {% endif %}
+    </div>
+{% endblock %}

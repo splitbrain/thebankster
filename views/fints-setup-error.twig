@@ -1,0 +1,26 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+    <h1 class="title">FinTS Setup Error</h1>
+    <h2 class="subtitle">Account: {{ account.account }}</h2>
+
+    <div class="notification is-danger">
+        <p class="has-text-weight-bold">✗ Setup failed</p>
+        <p>{{ error }}</p>
+    </div>
+
+    <div class="box">
+        <p>Please try again or check the following:</p>
+        <ul>
+            <li>Verify your account credentials are correct</li>
+            <li>Ensure your bank supports FinTS/HBCI access</li>
+            <li>Check if your account is locked or requires activation</li>
+            <li>Make sure you entered the correct TAN</li>
+        </ul>
+
+        <div class="field" style="margin-top: 1.5rem;">
+            <a href="{{ path_for('fints-setup', {'account': account.account}) }}" class="button is-primary">Try Again</a>
+            <a href="{{ path_for('accounts') }}" class="button">Back to Accounts</a>
+        </div>
+    </div>
+{% endblock %}

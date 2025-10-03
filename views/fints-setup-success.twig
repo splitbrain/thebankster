@@ -1,0 +1,25 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+    <h1 class="title">FinTS Setup Complete</h1>
+    <h2 class="subtitle">Account: {{ account.account }}</h2>
+
+    <div class="notification is-success">
+        <p class="has-text-weight-bold">✓ Authentication successful!</p>
+        <p>Your FinTS account is now configured and ready to use. The authentication is valid for 90 days.</p>
+    </div>
+
+    <div class="box">
+        <p>You can now:</p>
+        <ul>
+            <li>Import transactions using the command line: <code>./bin/import.php {{ account.account }}</code></li>
+            <li>Or import all accounts: <code>./bin/import.php</code></li>
+            <li>View and manage your account in the web interface</li>
+        </ul>
+
+        <div class="field" style="margin-top: 1.5rem;">
+            <a href="{{ path_for('accounts') }}" class="button is-primary">Back to Accounts</a>
+            <a href="{{ path_for('uncategorized') }}" class="button">View Uncategorized Transactions</a>
+        </div>
+    </div>
+{% endblock %}

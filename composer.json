@@ -12,18 +12,18 @@
     }
   ],
   "require": {
-    "mschindler83/fints-hbci-php": "^1.0",
     "splitbrain/php-cli": "^1.0",
     "guzzlehttp/guzzle": "^6.3",
     "electrolinux/phpquery": "^0.9.6",
     "mustangostang/spyc": "^0.6.2",
-    "tflori/orm": "^1.2",
+    "tflori/orm": "^1.9",
     "slim/slim": "^3.0",
     "slim/twig-view": "^2.3",
     "iamcal/lib_autolink": "^1.7",
     "ext-pdo": "*",
     "ext-pdo_sqlite": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "nemiah/php-fints": "^3.6"
   },
   "autoload": {
     "psr-4": {

@@ -45,10 +45,55 @@
                 </div>
 
                 {% if not isnew %}
-                    {% set check = account.checkConfig() %}
-                    <div class="notification {% if check.ok %}is-success{% else %}is-danger{% endif %}">
-                        {{ check.info |nl2br }}
-                    </div>
+                    {% if account.backend == 'FinTS' and fintsState and not fintsState.isConfigured() %}
+                        <div class="notification is-warning">
+                            <p><strong>FinTS TAN Mode Setup Required</strong></p>
+                            <p>This FinTS account needs to be configured with a TAN mode before it can be used.</p>
+                            <a href="{{ path_for('fints-setup', {'account': account.account}) }}" class="button is-primary" style="margin-top: 10px;">
+                                Configure TAN Mode
+                            </a>
+                        </div>
+                    {% elseif account.backend == 'FinTS' and not fintsState %}
+                        <div class="notification is-warning">
+                            <p><strong>FinTS TAN Mode Setup Required</strong></p>
+                            <p>This FinTS account needs to be configured with a TAN mode before it can be used.</p>
+                            <a href="{{ path_for('fints-setup', {'account': account.account}) }}" class="button is-primary" style="margin-top: 10px;">
+                                Configure TAN Mode
+                            </a>
+                        </div>
+                    {% else %}
+                        {% set check = account.checkConfig() %}
+                        <div class="notification {% if check.ok %}is-success{% else %}is-danger{% endif %}">
+                            {{ check.info |nl2br }}
+                        </div>
+                    {% endif %}
+
+                    {% if account.backend == 'FinTS' and fintsState and fintsState.isConfigured() %}
+                        <div class="box">
+                            <h4 class="title is-5">FinTS Authentication Status</h4>
+                            <p><strong>TAN Mode:</strong> {{ fintsState.tan_mode }}</p>
+                            {% if fintsState.tan_medium %}
+                                <p><strong>TAN Medium:</strong> {{ fintsState.tan_medium }}</p>
+                            {% endif %}
+                            <p><strong>Last Authentication:</strong> {{ fintsState.last_auth }}</p>
+                            <p><strong>Expires:</strong> {{ fintsState.auth_expires }}</p>
+                            <p><strong>Days until expiry:</strong> {{ fintsState.getDaysUntilExpiry() }}</p>
+
+                            {% if fintsState.isExpired() %}
+                                <div class="notification is-danger" style="margin-top: 10px;">
+                                    Authentication has expired! Please re-authenticate.
+                                </div>
+                            {% elseif fintsState.getDaysUntilExpiry() <= 7 %}
+                                <div class="notification is-warning" style="margin-top: 10px;">
+                                    Authentication expires soon!
+                                </div>
+                            {% endif %}
+
+                            <a href="{{ path_for('fints-setup', {'account': account.account}) }}" class="button is-link" style="margin-top: 10px;">
+                                Re-configure / Re-authenticate
+                            </a>
+                        </div>
+                    {% endif %}
 
                     <div class="box">
                         <a href="{{ path_for('account-del', {'account': account.account}) }}"

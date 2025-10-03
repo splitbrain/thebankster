@@ -1,0 +1,49 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+    <h1 class="title">FinTS Setup: Enter TAN</h1>
+    <h2 class="subtitle">Account: {{ account.account }}</h2>
+
+    {% if error %}
+        <div class="notification is-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <div class="box">
+        <p class="has-text-weight-bold">Your bank is requesting a TAN to complete the authentication.</p>
+
+        {% if challenge %}
+            <div class="notification is-info">
+                <strong>Challenge:</strong><br>
+                {{ challenge|nl2br }}
+            </div>
+        {% endif %}
+
+        {% if tanMediumName %}
+            <p><strong>TAN Medium:</strong> {{ tanMediumName }}</p>
+        {% endif %}
+
+        {% if challengeHhdUc %}
+            <div class="notification is-warning">
+                <p>Challenge image data detected (ChipTAN/PhotoTAN). Please use your TAN generator device.</p>
+            </div>
+        {% endif %}
+
+        <form action="{{ path_for('fints-setup', {'account': account.account}) }}" method="post">
+            <input type="hidden" name="step" value="submit_tan">
+
+            <div class="field">
+                <label class="label">Enter TAN:</label>
+                <div class="control">
+                    <input class="input" type="text" name="tan" placeholder="Enter your TAN here" required autofocus>
+                </div>
+            </div>
+
+            <div class="field">
+                <button class="button is-primary" type="submit">Submit TAN</button>
+                <a href="{{ path_for('accounts') }}" class="button">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

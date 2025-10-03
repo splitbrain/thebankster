@@ -4,10 +4,11 @@ namespace splitbrain\TheBankster\CLI;
 
 use splitbrain\phpcli\Options;
 use splitbrain\phpcli\PSR3CLI;
+use splitbrain\phpcli\PSR3CLIv3;
 use splitbrain\TheBankster\Container;
 use splitbrain\TheBankster\SqlHelper;
 
-class MigrateCLI extends PSR3CLI
+class MigrateCLI extends PSR3CLIv3
 {
     const DBFILES = __DIR__ . '/../../db';
 

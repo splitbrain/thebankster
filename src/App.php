@@ -5,6 +5,7 @@ namespace splitbrain\TheBankster;
 use splitbrain\TheBankster\Controller\AccountController;
 use splitbrain\TheBankster\Controller\CategoryController;
 use splitbrain\TheBankster\Controller\ChartController;
+use splitbrain\TheBankster\Controller\FinTsSetupController;
 use splitbrain\TheBankster\Controller\HomeController;
 use splitbrain\TheBankster\Controller\RuleController;
 use splitbrain\TheBankster\Controller\SearchController;
@@ -54,6 +55,7 @@ class App
         $this->app->any('/accounts/edit/{account}', AccountController::class)->setName('account');
         $this->app->any('/accounts/del/{account}', AccountController::class . ':remove')->setName('account-del');
         $this->app->any('/accounts/new/{backend}', AccountController::class . ':add')->setName('account-new');
+        $this->app->any('/accounts/fints-setup/{account}', FinTsSetupController::class)->setName('fints-setup');
 
         $this->app->get('/category/del/{id}', CategoryController::class . ':remove')->setName('category-del');
         $this->app->any('/category/[{id}]', CategoryController::class)->setName('category');

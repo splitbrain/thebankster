@@ -6,6 +6,7 @@ use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use splitbrain\TheBankster\Entity\Account;
+use splitbrain\TheBankster\Entity\FinTsState;
 
 class AccountController extends BaseController
 {
@@ -94,11 +95,26 @@ class AccountController extends BaseController
                 if ($isnew) $account->account = $post['account'];
                 $account->configuration = $post['conf'];
                 $account = $account->save();
+
+                // For FinTS accounts, check if TAN mode setup is needed
+                if ($account->backend === 'FinTS') {
+                    $fintsState = $this->container->db->fetch(FinTsState::class)
+                        ->where('account', '=', $account->account)
+                        ->one();
+
+                    if (!$fintsState || !$fintsState->isConfigured()) {
+                        // Redirect to FinTS setup
+                        return $response->withRedirect(
+                            $this->container->router->pathFor('fints-setup', ['account' => $account->account])
+                        );
+                    }
+                }
+
                 return $response->withRedirect(
                     $this->container->router->pathFor('account', ['account' => $account->account])
                 );
             } catch (\Exception $e) {
-                $error = $e->getMessage();
+                $error = $e->getMessage() . $e->getTraceAsString();
             }
         }
 
@@ -107,6 +123,14 @@ class AccountController extends BaseController
             'Accounts' => $this->container->router->pathFor('accounts'),
             $title => $self,
         ];
+
+        // For FinTS accounts, get state information
+        $fintsState = null;
+        if ($account->backend === 'FinTS' && !$isnew) {
+            $fintsState = $this->container->db->fetch(FinTsState::class)
+                ->where('account', '=', $account->account)
+                ->one();
+        }
 
         return $this->view->render($response, 'account.twig',
             [
@@ -117,6 +141,7 @@ class AccountController extends BaseController
                 'account' => $account,
                 'isnew' => $isnew,
                 'self' => $self,
+                'fintsState' => $fintsState,
             ]
         );
     }
@@ -133,6 +158,19 @@ class AccountController extends BaseController
         $accounts = $this->container->db->fetch(Account::class)->orderBy('account')->all();
         $backends = Account::listBackends();
 
+        // Get FinTS state for all FinTS accounts
+        $fintsStates = [];
+        foreach ($accounts as $account) {
+            if ($account->backend === 'FinTS') {
+                $state = $this->container->db->fetch(FinTsState::class)
+                    ->where('account', '=', $account->account)
+                    ->one();
+                if ($state) {
+                    $fintsStates[$account->account] = $state;
+                }
+            }
+        }
+
         $breadcrumbs = [
             'Home' => $this->container->router->pathFor('home'),
             'Accounts' => $this->container->router->pathFor('accounts'),
@@ -144,6 +182,7 @@ class AccountController extends BaseController
                 'breadcrumbs' => $breadcrumbs,
                 'backends' => $backends,
                 'accounts' => $accounts,
+                'fintsStates' => $fintsStates,
             ]
         );
     }

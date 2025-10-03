@@ -1,5 +1,5 @@
 settings:
   displayErrorDetails: true
   cache: false
-  debug: false
+  debug: true
   currency: EUR

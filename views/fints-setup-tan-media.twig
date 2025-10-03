@@ -1,0 +1,39 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+    <h1 class="title">FinTS Setup: Select TAN Medium</h1>
+    <h2 class="subtitle">Account: {{ account.account }}</h2>
+
+    {% if error %}
+        <div class="notification is-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <div class="box">
+        <p>The selected TAN mode <strong>{{ tanMode.getName() }}</strong> requires you to select a TAN medium (e.g., mobile device):</p>
+
+        {% if tanMedia|length > 0 %}
+            <form action="{{ path_for('fints-setup', {'account': account.account}) }}" method="post">
+                <input type="hidden" name="step" value="select_tan_medium">
+
+                <div class="field">
+                    {% for medium in tanMedia %}
+                        <label class="radio">
+                            <input type="radio" name="tan_medium" value="{{ medium.getName() }}" {% if loop.first %}checked{% endif %}>
+                            {{ medium.getName() }}
+                        </label><br>
+                    {% endfor %}
+                </div>
+
+                <div class="field">
+                    <button class="button is-primary" type="submit">Continue</button>
+                    <a href="{{ path_for('fints-setup', {'account': account.account}) }}" class="button">Back</a>
+                </div>
+            </form>
+        {% else %}
+            <p class="has-text-danger">No TAN media available.</p>
+            <a href="{{ path_for('fints-setup', {'account': account.account}) }}" class="button">Back</a>
+        {% endif %}
+    </div>
+{% endblock %}
