@@ -56,7 +56,7 @@ class Container extends \Slim\Container
         $this['db'] = new EntityManager([
             EntityManager::OPT_CONNECTION => new DbConfig(
                 'sqlite',
-                __DIR__ . '/../data.sqlite3'
+                __DIR__ . '/../data/data.sqlite3'
             )
         ]);
         $this['db']->getConnection()->exec('PRAGMA foreign_keys = ON');

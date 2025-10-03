@@ -1,2 +1,2 @@
-vendor
-data.sqlite3*
+vendor/
+data/
